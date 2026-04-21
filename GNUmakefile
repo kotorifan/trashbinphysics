@@ -1,6 +1,6 @@
 CC := cc
 CCFLAGS := -O3 -std=c99 -pedantic -Wall -Wextra 
-LDFLAGS := -lraylib 
+LDFLAGS := -lraylib -lm
 SRC_DIR := src
 DST_DIR := dst
 
@@ -17,6 +17,6 @@ $(DST_DIR)/%.c.o: %.c
 .PHONY: clean
 clean:
 	rm -r $(DST_DIR)
-
+	rm physics
 run:
 	./physics
