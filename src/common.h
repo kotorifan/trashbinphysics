@@ -3,13 +3,35 @@
 #define COMMON_H
 
 #include <stdint.h>
-
 typedef uint_least8_t u8;
 typedef int_least8_t i8;
 typedef uint_least16_t u16;
 typedef int_least16_t i16;
 typedef uint_least32_t u32;
 typedef int_least32_t i32;
+
+#define SHAPE_ENUM_SIZE 3
+typedef enum {
+		SHAPE_CIRCLE,
+		SHAPE_SQUARE,
+		SHAPE_RECTANGLE
+} shape_t;
+
+typedef struct {
+		Color color;
+		float elast;
+//	Vector2 force;
+		float frict;
+		Vector2 pos;
+		Vector2 pos_prev;
+		Vector2 vel;
+		bool grabbed;
+		bool registered;
+		float mass;
+		float size_x;
+		float size_y;
+		shape_t obj_type;
+} object_t;
 
 
 
@@ -26,21 +48,14 @@ typedef int_least32_t i32;
 
 #define ARR_LEN(arr) (sizeof(arr)/sizeof(arr[0]))
 
-typedef enum {
-	SHAPE_CIRCLE,
-	SHAPE_SQUARE,
-	SHAPE_RECTANGLE
-} shape_t;
+#define RANDOM_SHAPE() ((shape_t)(GetRandomValue(0, SHAPE_ENUM_SIZE - 1)))
 
-shape_t get_random_shape(void)
-{
-	shape_t valid_shapes[] = {
-		SHAPE_CIRCLE,
-		SHAPE_SQUARE,
-		SHAPE_RECTANGLE
-	};
+#define RANDOM_COLOR() ((Color) {				\
+						GetRandomValue(0, 255),	\
+						GetRandomValue(0, 255),	\
+						GetRandomValue(0, 255),	\
+						255						\
+				})
 
-	return valid_shapes(GetRandomValue(0, ARR(valid_shapes)));
-}
 
 #endif // COMMON_H

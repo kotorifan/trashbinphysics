@@ -1,8 +1,9 @@
 // graphics.c
 #include <raylib.h>
 #include <stdint.h>
+#include <stdio.h>
 #include "graphics.h"
-#include "math.h"
+#include "common.h"
 
 void init_graphics(uint32_t x, uint32_t y, const char* title)
 {
@@ -37,16 +38,16 @@ void draw_graphics_object(const object_t* obj)
 	
 	Vector2 pos = obj->pos;
 
-	switch(obj->type) {
-	case OBJECT_CIRCLE:
-		DrawCircleV(pos, obj->size_x, color);
+	switch(obj->obj_type) {
+	case SHAPE_CIRCLE:
+		DrawCircleV(pos, obj->size_x/2.0f, color);
 		break;
-	case OBJECT_SQUARE:
+	case SHAPE_SQUARE:
 		DrawRectangleV(
 			(Vector2){pos.x - obj->size_x/2, pos.y - obj->size_y/2},
 			(Vector2){obj->size_x, obj->size_y}, color);
 		break;
-	case OBJECT_RECTANGLE:
+	case SHAPE_RECTANGLE:
 		DrawRectangleV(
 			(Vector2){pos.x - obj->size_x/2, pos.y - obj->size_y/2},
 			(Vector2){obj->size_x, obj->size_y}, color);
@@ -56,18 +57,18 @@ void draw_graphics_object(const object_t* obj)
 
 void draw_graphics_objects(const object_t* world, uint32_t count)
 {
-	for (uint32_t iter = 0; iter < count, i++)
+	for (uint32_t iter = 0; iter < count; iter++)
 	{
-		if(world[iter].registered) draw_graphics_object(&world[i]);
+		if(world[iter].registered) draw_graphics_object(&world[iter]);
 	}
 }
 
-void draw_graphics_info(uint32_t fps, uint32_t objs, uint32_t max_objs)
+void draw_graphics_info(uint32_t objs)
 {
 	char buffer[128];
-	snprintf(buffer, sizeof(buffer), "FPS: %d", fps;
+	snprintf(buffer, sizeof(buffer), "FPS: %d", GetFPS());
 	DrawText(buffer, 10, 10, 20, BLACK);
-	snprintf(buffer, sizeof(buffer), "OBJ: %d/%d", objs, max_objs);
+	snprintf(buffer, sizeof(buffer), "OBJ: %d/%d", objs, MAX_OBJECTS);
     DrawText(buffer, 10, 35, 20, BLACK); 
 	DrawText("ESC: Exit", 10, 60, 20, BLACK);
 	DrawText("R: Random velocity", 10, 85, 20, BLACK);

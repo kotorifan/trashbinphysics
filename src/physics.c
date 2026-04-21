@@ -7,51 +7,54 @@
 
 void init_physics(object_t* world, uint32_t max_objs)
 {
-	for(uint32_t iter = 0; iter < max_objs; iter++) world[iter].registered = false;
+	for(uint32_t iter = 0; iter < max_objs; iter++) {
+		world[iter].registered = false;
+		world[iter].grabbed = false;
+	}
 }
 
-void update_physics(object_t* world, uint32_t objs_count, float gravity, 
-					float damping, float dt)
+void update_physics(object_t* world, uint32_t objs_count, float gravity, float dt)
 {
 	const uint32_t screen_width = GetScreenWidth();
 	const uint32_t screen_height = GetScreenHeight();
+	if(dt > 0.033f) dt = 0.033f;
+	
 	for(uint32_t iter = 0; iter < objs_count; iter++)
 	{
 		object_t* obj = &world[iter];
-		if(!obj->grabbed) {
+		if(!obj->grabbed && obj->registered) {
 			obj->pos.x += obj->vel.x * dt;
 			obj->pos.y += obj->vel.y * dt;
 
-			if((obj->pos.x + obj->size_x >= screen_width)) {
-				obj->pos.x = screen_width - obj->size_x;
+			float half_width = obj->size_x/2.0f;
+			float half_height = obj->size_y/2.0f;
+
+			if((obj->pos.x + half_width >= screen_width)) {
+				obj->pos.x = screen_width - half_width;
 				obj->vel.x = -obj->vel.x * obj->elast;
-			} else if((obj->pos.x - obj->size_x) <= 0) {
-				obj->pos.x = obj->radius;
+
+			} else if((obj->pos.x - half_width) <= 0) {
+				obj->pos.x = half_width;
 				obj->vel.x = -obj->vel.x * obj->elast;
-			} else if((obj->pos.y + obj->size_y) >= screen_height) {
-				obj->pos.y = screen_height - obj->size_y;
+
+			} else if((obj->pos.y + half_height) >= screen_height) {
+				obj->pos.y = screen_height - half_height;
 				obj->vel.y = -obj->vel.y * obj->elast;
-			} else if((obj->pos.y - obj->size_y) <= 0) {
-				obj->pos.y = obj->size_y;
-				obj->vel.y -obj->vel.y * obj->elast;
+
+			} else if((obj->pos.y - half_height) <= 0) {
+				obj->pos.y = half_height;
+				obj->vel.y = -obj->vel.y * obj->elast;
+
 			}
 
 			obj->vel.x = obj->vel.x * obj->frict;
-			obj->vel.y = obj->vel.y * obj->frict * gravity; 
+			obj->vel.y = obj->vel.y * obj->frict * gravity * dt; 
+		}
+		
+		if(obj->grabbed) {
+			Vector2 cursor_pos = GetMousePosition();
+			obj->pos = cursor_pos;
+			obj->vel = (Vector2){0, 0};
 		}
 	}
-
-/* void apply_force(object_t* obj, Vector2 force) */
-/* { */
-/* 	if(obj->registered == true) { */
-/* 		obj->force = Vector2Add(body->force, force) */
-			
-/* 			} */
-/* } */
-
-/* void add_object(object_t* world, uint32_t* count, object_type_t type, Vector2 pos) */
-/* { */
-/* 	world */
-/* } */
-/* void clear_all_physics(object_t* world, uint32_t* count); */
-	void push_pos(object_t* world, uint32_t count, Vector2 pos, float radius, float strength);
+}

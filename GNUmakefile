@@ -1,5 +1,5 @@
 CC := cc
-CCFLAGS := -O3 -std=c99 -pedantic -Wall -Wextra 
+CCFLAGS := -O3 -std=c99 -pedantic -Wall -Wextra  -Wno-missing-braces
 LDFLAGS := -lraylib -lm
 SRC_DIR := src
 DST_DIR := dst
