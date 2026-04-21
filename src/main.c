@@ -1,60 +1,108 @@
 // main.c
+#include <math.h>
+#include <raylib.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <raylib.h>
-#include <math.h>
 
 #include "common.h"
 #include "graphics.h"
 #include "physics.h"
 
 
-void draw_graphics_info()
-{
-	char buffer[128];
-	snprintf(buffer, sizeof(buffer), "FPS: %d", GetFPS());
-	DrawText(buffer, 10, 10, 20, BLACK);
-	/* snprintf(buffer, sizeof(buffer), "OBJ: %d/%d", objects, MAX_OBJECTS); */
-    /* DrawText(buffer, 10, 35, 20, BLACK); */
-	DrawText("ESC: Exit", 10, 60, 20, BLACK);
-	DrawText("R: Random velocity", 10, 85, 20, BLACK);
-	DrawText("G: Random gravity", 10, 110, 20, BLACK);
-	DrawText("C: Clear screen", 10, 135, 20, BLACK);
-	DrawText("RCLICK: Push object", 10, 160, 20, BLACK);
-	DrawText("LCLICK: Add object", 10, 185, 20, BLACK);
-	DrawText("1: Spawn Circle", 10, 210, 20, BLACK);
-	DrawText("2: Spawn Square", 10, 235, 20, BLACK);
-	DrawText("3: Spawn Rectangle", 10, 260, 20, BLACK);
-}
 
-int main(void)
+int(void)
 {
-	bool should_run = true;
-
 	// physics related
-	object_t world[MAX_OBJECTS];
-	float force_resitution = FORCE_RESITUTION_DEFAULT;
+	object_t world = malloc(sizeof(object_t)*max_objs);
+	uint32_t objs_count = 0;
 	float force_gravity = FORCE_GRAVITY_DEFAULT;
 	float force_linear_damping = FORCE_LINEAR_DAMPING_DEFAULT;
 
-	InitWindow(WINDOW_X, WINDOW_Y, SCREEN_TITLE);
-	SetTargetFPS(60);
+	world[0] = (object_t){
+		.color = BLUE,
+		.elast = 0.9f,
+		.frict = 0.99f,
+		.grabbed = true,
+		.pos_prev = {0},
+		.registered = true;
+		.size_x = 40,
+		.size_y = 40,
+		.vel = {200, 200},
+		.pos = {GetScreenWidth()/2.0f, GetScreenheight()/2.0f},
+		object_type_t = OBJECT_CIRCLE
+	};
 
-	while(!WindowShouldClose() && should_run)
+	init_graphics(WINDOW_X, WINDOW_Y, SCREEN_TITLE);
+	while(!WindowShouldClose())
 	{	
 		/* handle_input(world) */
 		// physics_update
+		float dt = GetFrameTime(); // delta time
+		Vector2 pos_cursor = GetMousePosition();
 		
+		if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+		{
+			for(uint32 iter = objs_count -1; iter >= 0; i--)
+			{
+				object_t* obj = &world[i];
+				
+				if(hypot(pos_cursor.x, pos_cursor.y) <= (obj->size_x && obj->size_y))
+				{
+					obj->grabbed = true;
+					grabbed_obj = obj;
+					break;
+				}
+			}
+		}
+		
+		if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+		{
+			if(grabbed_obj != NULL)
+			{
+				grabbed_obj->grabbed = false;
+				grabbed_obj = NULL;
+			}
+		}
+
+		if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT))
+		{
+			if(objs_count =< max_objs)
+			{
+				world[objs_count++] = (object_t*){
+					.color = { 
+						GetRandomValue(0, 255),
+						GetRandomValue(0, 255),
+						GetRandomValue(0, 255),
+						255
+					},
+					.elast = 0.9f,
+					.frict = 0.99f,
+					.pos = pos_cursor;
+					.pos_prev = 0.99f,
+					.vel = { 
+						(float)GetRandomValue(-300, 300), 
+						(float)GetRandomValue(-300, 300)
+					},
+					.grabbed = false,
+					.registered = true;
+					.mass = GetRandomValue(0, 100), // will be done later
+					.size_x = GetRandomValue(3, 20), //everything smaller than 3 would be too small
+					.size_y = GetRandomValue(3, 20),
+					.obj_type = get_random_shape()
+				};
+			}
+		}
+
 		begin_graphics_drawing();
 
 		clear_graphics(RAYWHITE);
-		draw_graphics_objects(world, object_count, BLACK);
-		draw_graphics_info(GetFPS(), object_count, MAX_OBJECTS);
+		draw_graphics_objects(world, objs_count);
+		draw_graphics_info(GetFPS(), objs_count, MAX_OBJECTS);
 
 		end_graphics_drawing();
 	}
 
-	CloseWindow();
+    close_graphics();
 	return EXIT_SUCCESS;
 }

@@ -24,9 +24,23 @@ typedef int_least32_t i32;
 #define FORCE_GRAVITY_DEFAULT 1000.0f
 #define FORCE_LINEAR_DAMPING_DEFAULT 0.995f;
 
+#define ARR_LEN(arr) (sizeof(arr)/sizeof(arr[0]))
+
 typedef enum {
 	SHAPE_CIRCLE,
 	SHAPE_SQUARE,
 	SHAPE_RECTANGLE
 } shape_t;
+
+shape_t get_random_shape(void)
+{
+	shape_t valid_shapes[] = {
+		SHAPE_CIRCLE,
+		SHAPE_SQUARE,
+		SHAPE_RECTANGLE
+	};
+
+	return valid_shapes(GetRandomValue(0, ARR(valid_shapes)));
+}
+
 #endif // COMMON_H
