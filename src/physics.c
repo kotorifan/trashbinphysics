@@ -17,38 +17,34 @@ void update_physics(object_t* world, uint32_t objs_count, float gravity, float d
 {
 	const uint32_t screen_width = GetScreenWidth();
 	const uint32_t screen_height = GetScreenHeight();
-	if(dt > 0.033f) dt = 0.033f;
-	
-	for(uint32_t iter = 0; iter < objs_count; iter++)
-	{
+
+	for(uint32_t iter = 0; iter < objs_count; iter++) {
 		object_t* obj = &world[iter];
 		if(!obj->grabbed && obj->registered) {
+			
 			obj->pos.x += obj->vel.x * dt;
 			obj->pos.y += obj->vel.y * dt;
 
-			float half_width = obj->size_x/2.0f;
-			float half_height = obj->size_y/2.0f;
-
-			if((obj->pos.x + half_width >= screen_width)) {
-				obj->pos.x = screen_width - half_width;
+			if((obj->pos.x + obj->size_x) >= screen_width) {
+				obj->pos.x = screen_width - obj->size_x;
 				obj->vel.x = -obj->vel.x * obj->elast;
 
-			} else if((obj->pos.x - half_width) <= 0) {
-				obj->pos.x = half_width;
+			} else if((obj->pos.x - obj->size_x) <= 0) {
+				obj->pos.x = obj->size_x;
 				obj->vel.x = -obj->vel.x * obj->elast;
 
-			} else if((obj->pos.y + half_height) >= screen_height) {
-				obj->pos.y = screen_height - half_height;
+			} else if((obj->pos.y + obj->size_y) >= screen_height) {
+				obj->pos.y = screen_height - obj->size_y;
 				obj->vel.y = -obj->vel.y * obj->elast;
 
-			} else if((obj->pos.y - half_height) <= 0) {
-				obj->pos.y = half_height;
+			} else if((obj->pos.y - obj->size_y) <= 0) {
+				obj->pos.y = obj->size_y;
 				obj->vel.y = -obj->vel.y * obj->elast;
 
 			}
 
 			obj->vel.x = obj->vel.x * obj->frict;
-			obj->vel.y = obj->vel.y * obj->frict * gravity * dt; 
+			obj->vel.y = (obj->vel.y + gravity * dt) * obj->frict;
 		}
 		
 		if(obj->grabbed) {

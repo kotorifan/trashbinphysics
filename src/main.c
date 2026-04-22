@@ -26,8 +26,8 @@ int main(void)
 		.grabbed = true,
 		.pos_prev = {0},
 		.registered = true,
-		.size_x = 40,
-		.size_y = 40,
+		.size_x = 75,
+		.size_y = 75,
 		.vel = {200, 200},
 		.pos = { GetScreenWidth()/2.0f, GetScreenHeight()/2.0f },
 	    .obj_type = RANDOM_SHAPE()
@@ -90,8 +90,8 @@ int main(void)
 					.grabbed = false,
 					.registered = true,
 					.mass = GetRandomValue(3, 100), // will be done later
-					.size_x = GetRandomValue(3, 20), //everything smaller than 3 would be too small
-					.size_y = GetRandomValue(3, 20),
+					.size_x = GetRandomValue(50, 100), //everything smaller than 3 would be too small
+					.size_y = GetRandomValue(50, 100),
 					.obj_type = RANDOM_SHAPE()
 				};
 			}
