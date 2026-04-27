@@ -14,9 +14,13 @@ $(DST_DIR)/%.c.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) $(CCFLAGS) -c $< -o $@
 
-.PHONY: clean
+.PHONY: clean gendocs
+
 clean:
 	rm -r $(DST_DIR)
 	rm physics
 run:
 	./physics
+
+gendocs:
+	doxygen Doxyfile

@@ -6,12 +6,7 @@
 #include "physics.h"
 #include "common.h"
 
-#define GET_RECTANGLE_CENTER(rec) ((Vector2) {			\
-			rec.x + rec.width/2, rec.y + rec.height/2	\
-		};)
-
-
-bool get_sat(object_t obj1, object_t obj2)
+bool check_collision(object_t obj1, object_t obj2)
 {
 	// perp = perpendicular here
 	void* perpendicular_line = NULL;
@@ -68,6 +63,13 @@ bool get_sat(object_t obj1, object_t obj2)
 	return true;
 }
 
+void resolve_collision(object_t* obj1, object_t* obj2, Vector2 normal)
+{
+	Vector2 rel_vel = Vector2Subtract(obj1->vel, obj1->vel);
+	float vel_along = Vector2DotProduct(rel_vel, normal);
+	if(vel_along > 0) return;
+}
+
 void init_physics(object_t* world, uint32_t max_objs)
 {
 	for(u32 iter = 0; iter < max_objs; iter++) {
@@ -76,49 +78,26 @@ void init_physics(object_t* world, uint32_t max_objs)
 	}
 }
 
-/* void update_physics(object_t* world, uint32_t objs_count, float gravity, float dt) */
-/* { */
-/* 	const uint32_t screen_width = GetScreenWidth(); */
-/* 	const uint32_t screen_height = GetScreenHeight(); */
-
-/* 	for(u32 iter = 0; iter < objs_count; iter++) { */
-/* 		object_t* obj = &world[iter]; */
-/* 		if(!obj->grabbed && obj->registered) { */
-			
-/* 			obj->pos.x += obj->vel.x * dt; */
-/* 			obj->pos.y += obj->vel.y * dt; */
-
-/* 			if((obj->pos.x + obj->size_x) >= screen_width) { */
-/* 				obj->pos.x = screen_width - obj->size_x; */
-/* 				obj->vel.x = -obj->vel.x * obj->elast; */
-
-/* 			} else if((obj->pos.x - obj->size_x) <= 0) { */
-/* 				obj->pos.x = obj->size_x; */
-/* 				obj->vel.x = -obj->vel.x * obj->elast; */
-
-/* 			} else if((obj->pos.y + obj->size_y) >= screen_height) { */
-/* 				obj->pos.y = screen_height - obj->size_y; */
-/* 				obj->vel.y = -obj->vel.y * obj->elast; */
-
-/* 			} else if((obj->pos.y - obj->size_y) <= 0) { */
-/* 				obj->pos.y = obj->size_y; */
-/* 				obj->vel.y = -obj->vel.y * obj->elast; */
-
-/* 			} */
-
-/* 			obj->vel.x = obj->vel.x * obj->frict; */
-/* 			obj->vel.y = (obj->vel.y + gravity * dt) * obj->frict; */
-/* 		} */
+void update_physics(object_t* world, u32 objs_count, float gravity, float dt)
+{
+	const u32 screen_width = GetScreenWidth();
+	const u32 screen_height = GetScreenHeight();
+	Vector2 walls;
+	for(u32 iter = 0; iter < objs_count; iter++) {
+		object_t* obj = &world[iter];
 		
-/* 		for (u32 iter2 = 0; iter2 < objs_count; iter2++) { */
-/* 			if(check_collision(&world[iter], &world[iter2])) { */
-/* 			} */
-/* 		} */
-/* 	} */
-/* 	/\* if(obj->grabbed) { *\/ */
-/* 	/\* 	Vector2 cursor_pos = GetMousePosition(); *\/ */
-/* 	/\* 	obj->pos = cursor_pos; *\/ */
-/* 	/\* 	obj->vel = (Vector2){0, 0}; *\/ */
-/* 	/\* } *\/ */
-
-/* } */
+		// Clamp objects to the window boundaries if they move outside
+		obj = { 
+			Clamp(obj->pos.x, 0.0f, (float)screen_width),
+			Clamp(obj->pos.y, 0.0f, (float)screen_height)
+		};
+		
+		for(u32 iter2 = 0; iter2 < objs_count; iter2++) {
+			object_t obj_a = &world[iter];
+			object_t obj_b = &world[iter++];
+			if(check_collision(obj_a, obj_b)) {
+				
+			}
+		}
+	}
+}

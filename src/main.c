@@ -19,7 +19,7 @@ int main(void)
 	float force_gravity = FORCE_GRAVITY_DEFAULT;
 	object_t* grabbed_obj = NULL;
 	bool anti_gravity_toggle = false;
-	
+
 	world[0] = (object_t){
 		.color = RANDOM_COLOR(),
 		.elast = 0.9f,
@@ -46,8 +46,6 @@ int main(void)
 			} else {
 				for(uint32_t iter = objs_count; iter > 0; iter--) {
 					object_t* obj = &world[iter - 1];
-				
-
 					float dx = pos_cursor.x - obj->pos.x;
 					float dy = pos_cursor.y - obj->pos.y;
 				

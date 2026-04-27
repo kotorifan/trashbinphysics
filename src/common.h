@@ -22,6 +22,8 @@ typedef struct {
 	Color color;
 	float elast;
 	float frict;
+	float angle_vel;
+	float inertia;
 	Vector2 angle;
 	Vector2 pos;
 	Vector2 pos_prev;
@@ -29,8 +31,6 @@ typedef struct {
 	bool grabbed;
 	bool registered;
 	float mass;
-	float size_x;
-	float size_y;
     Vector2* vertices;
 	Vector2* edges;
 } object_t;
