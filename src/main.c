@@ -1,8 +1,8 @@
 /**
-  * @file main.c
-  * @brief The main loop and controls
-  * @date 2026-04-27
-  */
+ * @file main.c
+ * @brief The main loop and controls
+ * @date 2026-04-27
+ */
 #include <math.h>
 #include <raylib.h>
 #include <stdbool.h>
@@ -24,29 +24,19 @@ int main(void)
 	object_t* grabbed_obj = NULL;
 	bool anti_gravity_toggle = false;
 
-	objs_count = 1;
+
+
+	objs_count = 0;
 	init_physics(world, MAX_OBJECTS);
 	init_graphics(WINDOW_X, WINDOW_Y, SCREEN_TITLE);
+
+	Color bg_color = RANDOM_COLOR();
+    Image bg = GenImagePerlinNoise(GetScreenWidth(), GetScreenHeight(), 0, 0, 3.0f);
+	Texture2D bg_tex = LoadTextureFromImage(bg);
+	UnloadImage(bg);
+
 	while(!WindowShouldClose()) {
 		Vector2 pos_cursor = GetMousePosition();
-		
-		/* if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) { */
-		/* 	if(objs_count == 0) { */
-		/* 		grabbed_obj = NULL; */
-		/* 	} else { */
-		/* 		for(uint32_t iter = objs_count; iter > 0; iter--) { */
-		/* 			object_t* obj = &world[iter - 1]; */
-		/* 			float dx = pos_cursor.x - obj->pos.x; */
-		/* 			float dy = pos_cursor.y - obj->pos.y; */
-				
-		/* 			if(hypot(dx, dy) <= (obj->size_x && obj->size_y)) { */
-		/* 				obj->grabbed = true; */
-		/* 				grabbed_obj = obj; */
-		/* 				break; */
-		/* 			} */
-		/* 		} */
-		/* 	} */
-		/* } */
 		
 		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT)) {
 			if(grabbed_obj != NULL) {
@@ -57,50 +47,55 @@ int main(void)
 
 		if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 			if(objs_count < MAX_OBJECTS) {
-				world[objs_count++] = (object_t){
+				object_t obj = (object_t){
 					.color = RANDOM_COLOR(),
-					.elast = 0.9f,
-					.frict = 0.99f,
+					.elast = 0.05f,
+//					.frict = 0.99f,
+					.frict = 2.00f,
 					.pos = pos_cursor,
 					.pos_prev = pos_cursor,
 					.vel = { 
-						(float)GetRandomValue(-300, 300), 
-						(float)GetRandomValue(-300, 300)
+						(float)GetRandomValue(-30, 75), 
+						(float)GetRandomValue(-30, 75)
 					},
 					.grabbed = false,
 					.registered = true,
-					.mass = GetRandomValue(3, 100), // will be done later
+					.line_thickness = 2,
+					.mass = GetRandomValue(20, 50), // will be done later
+					.angle = 0.0f,
+					.angle_vel = 0.0f,
+					.vertex_n = 0,
+					.edge_n = 0,
 				};
+				generate_random_shape(&obj, (float)GetRandomValue(3, 30));
+				world[objs_count++] = obj;
 			}
 		}
 
 		if(IsKeyPressed(KEY_G)) {
-			if(anti_gravity_toggle) {
-				force_gravity = -75.0f;
-				anti_gravity_toggle = false;
-			} else if(!anti_gravity_toggle) {
-				force_gravity = FORCE_GRAVITY_DEFAULT;
-				anti_gravity_toggle = true;
-			}
+			anti_gravity_toggle = !anti_gravity_toggle;
+			// make the exact number customizable in the common.h
+			force_gravity = anti_gravity_toggle ? -75.0f : FORCE_GRAVITY_DEFAULT;
 		}
 
-		// to-do
-		/* if(IsKeyPressed(KEY_C)) { */
-		/* 	clear_world(world); */
-		/* } */
 		
 		float dt = GetFrameTime();
-		update_physics(world, objs_count, force_gravity, dt);
+		const u32 steps = ITER_PER_FRAME;
+		float sub_dt = dt/(float)steps;
+		for(u32 iter = 0; iter < ITER_PER_FRAME; iter++) {
+			update_physics(world, objs_count, force_gravity, sub_dt);
+		}
 
-		begin_graphics_drawing();
+		BeginDrawing();
 
-		clear_graphics(RAYWHITE);
+		ClearBackground(BLACK);
+		DrawTexture(bg_tex, 0, 0, bg_color);
 		draw_graphics_objects(world, objs_count);
 		draw_graphics_info(objs_count);
 
-		end_graphics_drawing();
+	    EndDrawing();
 	}
 
-    close_graphics();
+    CloseWindow();
 	return EXIT_SUCCESS;
 }

@@ -9,37 +9,16 @@
 #include "graphics.h"
 #include "common.h"
 
-
 void init_graphics(uint32_t x, uint32_t y, const char* title)
 {
 	InitWindow(x, y, title);
 	SetTargetFPS(60);
 }
 
-void close_graphics(void)
-{
-	CloseWindow();
-}
-
-void begin_graphics_drawing(void)
-{
-	BeginDrawing();
-}
-
-void end_graphics_drawing(void)
-{
-	EndDrawing();
-}
-
-void clear_graphics(const Color color)
-{
-	ClearBackground(color);
-}
-
 void draw_graphics_object(const object_t* obj)
 {
 	// shapes smaller than 3 don't make sense
-	if(obj->vertices == NULL || obj->vertex_n < 3) return;
+	if(obj->vertex_n < 3) return;
 
 	for(u32 iter = 0; iter < obj->vertex_n; iter++) {
 		Vector2 start = obj->vertices[iter];
@@ -47,7 +26,6 @@ void draw_graphics_object(const object_t* obj)
 		DrawLineEx(start, end, obj->line_thickness, obj->color);
 	}
 }
-
 
 void draw_graphics_objects(const object_t* world, uint32_t count)
 {
