@@ -1,9 +1,14 @@
-// graphics.c
+/**
+ *   @file graphics.c
+ *   @brief All things related to graphics
+ *   @date 2026-04-27
+ */
 #include <raylib.h>
 #include <stdint.h>
 #include <stdio.h>
 #include "graphics.h"
 #include "common.h"
+
 
 void init_graphics(uint32_t x, uint32_t y, const char* title)
 {
@@ -33,27 +38,16 @@ void clear_graphics(const Color color)
 
 void draw_graphics_object(const object_t* obj)
 {
-	const Color color = obj->color;
-	if(!obj->registered) return;
-	
-	Vector2 pos = obj->pos;
+	// shapes smaller than 3 don't make sense
+	if(obj->vertices == NULL || obj->vertex_n < 3) return;
 
-	switch(obj->obj_type) {
-	case SHAPE_CIRCLE:
-		DrawCircleV(pos, obj->size_x/2.0f, color);
-		break;
-	case SHAPE_SQUARE:
-		DrawRectangleV(
-			(Vector2){pos.x - obj->size_x/2, pos.y - obj->size_y/2},
-			(Vector2){obj->size_x, obj->size_y}, color);
-		break;
-	case SHAPE_RECTANGLE:
-		DrawRectangleV(
-			(Vector2){pos.x - obj->size_x/2, pos.y - obj->size_y/2},
-			(Vector2){obj->size_x, obj->size_y}, color);
-		break;
+	for(u32 iter = 0; iter < obj->vertex_n; iter++) {
+		Vector2 start = obj->vertices[iter];
+		Vector2 end = obj->vertices[(iter + 1) % obj->vertex_n];
+		DrawLineEx(start, end, obj->line_thickness, obj->color);
 	}
 }
+
 
 void draw_graphics_objects(const object_t* world, uint32_t count)
 {

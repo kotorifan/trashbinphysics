@@ -1,4 +1,8 @@
-// common.h
+/**
+ * @file common.h
+ * @brief Functions and values used throughout most files
+ * @date 2026-04-27
+*/
 #ifndef COMMON_H
 #define COMMON_H
 
@@ -9,14 +13,6 @@ typedef uint_least16_t u16;
 typedef int_least16_t i16;
 typedef uint_least32_t u32;
 typedef int_least32_t i32;
-
-/* #define SHAPE_ENUM_SIZE 4 */
-/* typedef enum { */
-/* 	SHAPE_CIRCLE, */
-/* 	SHAPE_SQUARE, */
-/* 	SHAPE_RECTANGLE, */
-/* 	SHAPE_TRIANGLE */
-/* } shape_t; */
 
 typedef struct {
 	Color color;
@@ -33,6 +29,9 @@ typedef struct {
 	float mass;
     Vector2* vertices;
 	Vector2* edges;
+	float line_thickness;
+	u32 vertex_n; // number of vertices
+	u32 edge_n; // number of edges
 } object_t;
 
 
@@ -49,8 +48,6 @@ typedef struct {
 #define FORCE_LINEAR_DAMPING_DEFAULT 0.995f;
 
 #define ARR_LEN(arr) (sizeof(arr)/sizeof(arr[0]))
-
-#define RANDOM_SHAPE() ((shape_t)(GetRandomValue(0, SHAPE_ENUM_SIZE - 1)))
 
 #define RANDOM_COLOR() ((Color) {				\
 			GetRandomValue(0, 255),				\
