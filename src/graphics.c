@@ -72,13 +72,10 @@ void draw_graphics_info(uint32_t objs)
     DrawText(buffer, 10, 35, 20, BLACK); 
 	DrawText("ESC: Exit", 10, 60, 20, BLACK);
 	DrawText("R: Random velocity", 10, 85, 20, BLACK);
-	DrawText("G: Random gravity", 10, 110, 20, BLACK);
+	DrawText("G: Anti-Gravity", 10, 110, 20, BLACK);
 	DrawText("C: Clear screen", 10, 135, 20, BLACK);
 	DrawText("RCLICK: Push object", 10, 160, 20, BLACK);
 	DrawText("LCLICK: Add object", 10, 185, 20, BLACK);
-	DrawText("1: Spawn Circle", 10, 210, 20, BLACK);
-	DrawText("2: Spawn Square", 10, 235, 20, BLACK);
-	DrawText("3: Spawn Rectangle", 10, 260, 20, BLACK);
 }
 
 bool should_close_graphics(void)

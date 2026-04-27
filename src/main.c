@@ -18,7 +18,8 @@ int main(void)
 	uint32_t objs_count = 0;
 	float force_gravity = FORCE_GRAVITY_DEFAULT;
 	object_t* grabbed_obj = NULL;
-
+	bool anti_gravity_toggle = false;
+	
 	world[0] = (object_t){
 		.color = RANDOM_COLOR(),
 		.elast = 0.9f,
@@ -36,29 +37,21 @@ int main(void)
 	objs_count = 1;
 	init_physics(world, MAX_OBJECTS);
 	init_graphics(WINDOW_X, WINDOW_Y, SCREEN_TITLE);
-	while(!WindowShouldClose())
-	{	
-		/* handle_input(world) */
-		// physics_update
-		/* float dt = GetFrameTime(); delta time */
+	while(!WindowShouldClose()) {
 		Vector2 pos_cursor = GetMousePosition();
 		
-		if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-		{
-			if(objs_count == 0)
-			{
+		if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+			if(objs_count == 0) {
 				grabbed_obj = NULL;
 			} else {
-				for(uint32_t iter = objs_count; iter > 0; iter--)
-				{
+				for(uint32_t iter = objs_count; iter > 0; iter--) {
 					object_t* obj = &world[iter - 1];
 				
 
 					float dx = pos_cursor.x - obj->pos.x;
 					float dy = pos_cursor.y - obj->pos.y;
 				
-					if(hypot(dx, dy) <= (obj->size_x && obj->size_y))
-					{
+					if(hypot(dx, dy) <= (obj->size_x && obj->size_y)) {
 						obj->grabbed = true;
 						grabbed_obj = obj;
 						break;
@@ -67,15 +60,14 @@ int main(void)
 			}
 		}
 		
-		if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
-		{
+		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT)) {
 			if(grabbed_obj != NULL) {
 				grabbed_obj->grabbed = false;
 				grabbed_obj = NULL;
 			}
 		}
 
-		if(IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+		if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 			if(objs_count < MAX_OBJECTS) {
 				world[objs_count++] = (object_t){
 					.color = RANDOM_COLOR(),
@@ -90,13 +82,28 @@ int main(void)
 					.grabbed = false,
 					.registered = true,
 					.mass = GetRandomValue(3, 100), // will be done later
-					.size_x = GetRandomValue(50, 100), //everything smaller than 3 would be too small
+					.size_x = GetRandomValue(50, 100), //everything smaller than 3 would xbe too small
 					.size_y = GetRandomValue(50, 100),
 					.obj_type = RANDOM_SHAPE()
 				};
 			}
 		}
 
+		if(IsKeyPressed(KEY_G)) {
+			if(anti_gravity_toggle) {
+				force_gravity = -75.0f;
+				anti_gravity_toggle = false;
+			} else if(!anti_gravity_toggle) {
+				force_gravity = FORCE_GRAVITY_DEFAULT;
+				anti_gravity_toggle = true;
+			}
+		}
+
+		// to-do
+		/* if(IsKeyPressed(KEY_C)) { */
+		/* 	clear_world(world); */
+		/* } */
+		
 		float dt = GetFrameTime();
 		update_physics(world, objs_count, force_gravity, dt);
 

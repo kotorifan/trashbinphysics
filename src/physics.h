@@ -8,6 +8,7 @@
 
 
 void init_physics(object_t* world, uint32_t max_objs);
+bool check_collision(object_t obj1, object_t obj2);
 void update_physics(object_t* world, uint32_t objs_count, float gravity, float dt);
 void apply_force(object_t* obj, Vector2 force);
 void add_object(object_t* world, uint32_t* count, shape_t type, Vector2 pos);
